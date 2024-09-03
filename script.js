@@ -1,3 +1,7 @@
+const fs = require('fs');
+const xml2js = require('xml2js');
+
+
 
 const exercicio1 = () => {
     let INDICE = 13, SOMA = 0, K = 0; 
@@ -28,31 +32,94 @@ const exercicio2 = (numero) => {
 exercicio2(22);
 
 
-const exercicio3 = (faturamento) => {
-    let menor = faturamento[0];
-    let maior = faturamento[0];
-    let media = 0;
+// const exercicio3 = (filePath) => {
+//     const data = fs.readFileSync(filePath, 'utf8');
+//     const faturamento = JSON.parse(data);
+
+//     let menor = faturamento[0].valor;
+//     let maior = faturamento[0].valor;
+//     let soma = 0;
+//     let dias = faturamento.length;
+
+//     for (let i = 0; i < faturamento.length; i++) {
+//         // console.log(`Dia ${i + 1}: ${faturamento[i].valor}`);
+//         if (faturamento[i].valor.toFixed(2) < menor) {
+//             menor = faturamento[i].valor;
+//         }
+//         if (faturamento[i].valor.toFixed(2) > maior) {
+//             maior = faturamento[i].valor;
+//         }
+//         if (faturamento[i].valor.toFixed(2)) {
+//             soma += faturamento[i].valor;
+//         }
+//     }
+
+//     const media = (soma / dias).toFixed(2);
+
+//     console.log(`Média: ${media}`);
+//     console.log(`Menor faturamento: ${menor}`);
+//     console.log(`Maior faturamento: ${maior}`);
+//     console.log(`Dias com faturamento acima de ${media}: ${faturamento.filter((item) => item.valor > media).length}`);
+// }
+
+// exercicio3('./dados.json');
+
+
+const parseXML = (filePath) => {
+    const data = fs.readFileSync(filePath, 'utf8');
+    let result;
+    xml2js.parseString(`<root>${data}</root>`, (err, parsedData) => {
+        if (err) {
+            throw new Error('Erro ao parsear XML');
+        }
+        result = parsedData;
+    });
+    return result;
+};
+
+const exercicio3 = (filePath) => {
+    const ext = filePath.split('.').pop();
+    let faturamento;
+
+    if (ext === 'json') {
+        const data = fs.readFileSync(filePath, 'utf8');
+        faturamento = JSON.parse(data);
+    } else if (ext === 'xml') {
+        const parsedData = parseXML(filePath);
+        faturamento = parsedData.root.row.map(item => ({ valor: parseFloat(item.valor[0]) }));
+    } else {
+        throw new Error('Formato de arquivo não suportado');
+    }
+
+    let menor = faturamento[0].valor;
+    let maior = faturamento[0].valor;
     let soma = 0;
-    let dias = faturamento.length - 1;
-    for(let i = 0; i < faturamento.length; i++) {
-        if(faturamento[i] < menor) {
-            menor = faturamento[i];
+    let dias = faturamento.length;
+
+    for (let i = 0; i < faturamento.length; i++) {
+        if (faturamento[i].valor < menor) {
+            menor = faturamento[i].valor;
         }
-        if(faturamento[i] > maior) {
-            maior = faturamento[i];
+        if (faturamento[i].valor > maior) {
+            maior = faturamento[i].valor;
         }
-        if(faturamento[i]) {
-            soma += faturamento[i];
+        if (faturamento[i].valor) {
+            soma += faturamento[i].valor;
         }
     }
-    media = soma / dias;
+
+    const media = (soma / dias).toFixed(2);
+
     console.log(`Média: ${media}`);
     console.log(`Menor faturamento: ${menor}`);
     console.log(`Maior faturamento: ${maior}`);
-    console.log(`Dias com faturamento acima da média: ${faturamento.filter(f => f > media).length}`);
+    console.log(`Dias com faturamento acima de ${media}: ${faturamento.filter((item) => item.valor > media).length}`);
 }
 
-exercicio3([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 30]);
+// Exemplo de uso
+exercicio3('./dados.json');
+exercicio3('./dadosxml.xml');
+
 
 
 const FATURAMENTO_MENSAL = {
