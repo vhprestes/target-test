@@ -2,8 +2,16 @@
 
 
 Tecnologias utilizadas:
-Javascript
 
+
+
+Javascript
+<br />
+[xml2js](https://www.npmjs.com/package/xml2js)
+
+
+
+<br />
 
 Para rodar esse projeto e conferir os resultados:
 
@@ -17,8 +25,12 @@ git clone git@github.com:vhprestes/target-test.git
 ````bash
 cd target-test
 ````
+3- instale as dependências
+````bash
+npm install
+````
 
-3- execute o projeto
+4- execute o projeto
 ````bash
 node script.js
 ````
